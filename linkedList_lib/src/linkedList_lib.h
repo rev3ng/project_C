@@ -1,13 +1,25 @@
 /*
- * linkedList_lib.h
+ * lista.h
  *
- *  Created on: Oct 28, 2017
+ *  Created on: Oct 15, 2017
  *      Author: konrad
  */
 
-#ifndef SRC_LINKEDLIST_LIB_H_
-#define SRC_LINKEDLIST_LIB_H_
+#ifndef LISTA_H_
+#define LISTA_H_
+
+struct Node {
+	int id;
+	int a;
+	int b;
+	struct Node *next;
+	struct Node *prev;
+};
+
+struct Node *reserve_mem (int a, int b);
+void insert_tail (int a, int b);
+void print_list ();
+void delete_id (int a);
 
 
-
-#endif /* SRC_LINKEDLIST_LIB_H_ */
+#endif /* LISTA_H_ */
