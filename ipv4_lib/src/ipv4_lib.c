@@ -9,15 +9,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <arpa/inet.h>
 
 
 
-
-unsigned short ipv4_checksum (unsigned short *dtg){
+unsigned short Ipv4_checksum (unsigned short *dtg, struct iphdr *iph){
 
 	unsigned short sum = 0;
 
-	for ( int i = 0; i <= 5*2; i++ ){
+	for ( int i = 0; i <= (iph->ihl) * 2; i++ ){
 		sum = sum + *(dtg+i);
 	}
 
@@ -29,7 +29,7 @@ unsigned short ipv4_checksum (unsigned short *dtg){
 
 
 
-void create_ipv4_packet (){
+void Create_ipv4_packet (){
 
 	//sender address
 	char sender_ip [32];
@@ -51,7 +51,7 @@ void create_ipv4_packet (){
 	//data part (jump after header adress)
 	data = datagram + sizeof (struct iphdr);
 	//fill field with some data
-	data = strcpy(data, "1234567890QWERTYUIOPASDFGHJKLZXCVBNM")
+	data = strcpy(data, "1234567890QWERTYUIOPASDFGHJKLZXCVBNM");
 
 	//fill header fields
 	iph->version = 4;	//version 4/6
@@ -61,12 +61,12 @@ void create_ipv4_packet (){
 	iph->id = htonl (1234);	//packet id
 	iph->frag_off = 0;		//fragment offset
 	iph->ttl = 64;			//time to live
-	iph->protocol = IPPROTO_IP;			//protocol
+	iph->protocol = IPPROTO_IP;	 		//protocol
 	iph->check = 0;		//checksum
 	iph->saddr = inet_addr(sender_ip);		//source address --inet_addr->converts string to address
 	iph->daddr = inet_addr(destination_ip);	//destination address
 
-	iph->check = ipv4_checksum();		//TODO checksum function
+	iph->check = htonl(ipv4_checksum((unsigned short *)datagram, iph));		//checksum function
 
 
 

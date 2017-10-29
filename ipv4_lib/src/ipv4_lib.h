@@ -11,8 +11,8 @@
 #include <netinet/ip.h>
 
 
-void create_ipv4_packet ();
-
+void Create_ipv4_packet ();
+unsigned short Ipv4_checksum (unsigned short *dtg, struct iphdr *iph);
 
 
 #endif /* IPV4_LIB_H_ */
