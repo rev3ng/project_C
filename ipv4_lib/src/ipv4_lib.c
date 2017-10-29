@@ -11,11 +11,52 @@
 #include <string.h>
 
 
+
+unsigned short csum(unsigned short *ptr,int nbytes)
+{
+    register long sum;
+    unsigned short oddbyte;
+    register short answer;
+
+    sum=0;
+    while(nbytes>1) {
+        sum+=*ptr++;
+        nbytes-=2;
+    }
+    if(nbytes==1) {
+        oddbyte=0;
+        *((u_char*)&oddbyte)=*(u_char*)ptr;
+        sum+=oddbyte;
+    }
+
+    sum = (sum>>16)+(sum & 0xffff);
+    sum = sum + (sum>>16);
+    answer=(short)~sum;
+
+    return(answer);
+}
+
+unsigned short ipv4_checksum (struct iphdr *iph){
+	unsigned short sum = 0;
+
+	while ( iph->ihl > 1){
+		sum = sum+
+	}
+
+	return sum;
+}
+
+
+
 void create_ipv4_packet (){
 
 	//sender address
 	char sender_ip [32];
 	strcpy (sender_ip, "192.168.1.123");
+
+	//destination address
+	char destination_ip [32];
+	strcpy (destination_ip, "8.8.8.8");
 
 	//datagram to represent the packet
 	char datagram [4096], *data;
@@ -32,17 +73,17 @@ void create_ipv4_packet (){
 	data = strcpy(data, "1234567890QWERTYUIOPASDFGHJKLZXCVBNM")
 
 	//fill header fields
-	iph->version = 4;	//
-	iph->ihl = 5;		//
-	iph->tos = 0;		//
+	iph->version = 4;	//version 4/6
+	iph->ihl = 5;		//internet header length (32bit words)
+	iph->tos = 0;		//type of service
 	iph->tot_len = sizeof (struct iphdr) + strlen(data);	//
 	iph->id = htonl (1234);	//packet id
 	iph->frag_off = 0;		//fragment offset
 	iph->ttl = 64;			//time to live
 	iph->protocol = IPPROTO_IP;			//protocol
 	iph->check = 0;		//checksum
-	iph->saddr = inet_addr(sender_ip);		//source address
-	iph->daddr = ;		//destination address
+	iph->saddr = inet_addr(sender_ip);		//source address --inet_addr->converts string to address
+	iph->daddr = inet_addr(destination_ip);	//destination address
 
 	iph->check = ;		//TODO checksum function
 
