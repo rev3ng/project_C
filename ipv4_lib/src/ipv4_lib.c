@@ -12,36 +12,17 @@
 
 
 
-unsigned short csum(unsigned short *ptr,int nbytes)
-{
-    register long sum;
-    unsigned short oddbyte;
-    register short answer;
 
-    sum=0;
-    while(nbytes>1) {
-        sum+=*ptr++;
-        nbytes-=2;
-    }
-    if(nbytes==1) {
-        oddbyte=0;
-        *((u_char*)&oddbyte)=*(u_char*)ptr;
-        sum+=oddbyte;
-    }
+unsigned short ipv4_checksum (unsigned short *dtg){
 
-    sum = (sum>>16)+(sum & 0xffff);
-    sum = sum + (sum>>16);
-    answer=(short)~sum;
-
-    return(answer);
-}
-
-unsigned short ipv4_checksum (struct iphdr *iph){
 	unsigned short sum = 0;
 
-	while ( iph->ihl > 1){
-		sum = sum+
+	for ( int i = 0; i <= 5*2; i++ ){
+		sum = sum + *(dtg+i);
 	}
+
+	sum += 2;
+	sum = ~sum;
 
 	return sum;
 }
@@ -85,7 +66,7 @@ void create_ipv4_packet (){
 	iph->saddr = inet_addr(sender_ip);		//source address --inet_addr->converts string to address
 	iph->daddr = inet_addr(destination_ip);	//destination address
 
-	iph->check = ;		//TODO checksum function
+	iph->check = ipv4_checksum();		//TODO checksum function
 
 
 
