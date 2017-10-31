@@ -18,9 +18,11 @@
 
 int main (void) {
 
+	printf ("%d", sizeof(long));
 	int i = Load_ipv4();
 	char* (*ipv4) ();
 	ipv4 = dlsym(IpLib, "Create_ipv4_packet");
+
 	char *asd = (*ipv4)();
 
 	return EXIT_SUCCESS;
