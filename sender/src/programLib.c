@@ -8,36 +8,50 @@
 #include <stdio.h>
 #include "programLib.h"
 
+
+
 //function to load IPv4 library
-int Load_ipv4 (){
+void * Load_ipv4 (){
+
+	void *IpLib;	//handle to IP lib
 
 	IpLib = dlopen("./ipv4_lib.so", RTLD_LAZY);
 		if (!IpLib)
 			return 0;
 		else
-			return 1;
+			return IpLib;
 
 }
 
 //function to load ICMP library
-int Load_icmp (){
+void * Load_icmp (){
+
+	void *IcmpLib;	//handle to ICMP lib
 
 	IcmpLib = dlopen("./icmp_lib.so", RTLD_LAZY);
 		if (!IcmpLib)
 			return 0;
 		else
-			return 1;
+			return IcmpLib;
 
 }
 
 //funtion to load Linked list library
-int Load_list (){
+void * Load_list (){
+
+	void *LinkedLib;//handle to LinkedList lib
 
 	LinkedLib = dlopen("./linkedList_lib.so", RTLD_LAZY);
 		if (!LinkedLib)
 			return 0;
 		else
-			return 1;
+			return LinkedLib;
 
 }
 
+//function to send created packet
+void SendPacket ( char *datagram, unsigned short size ){
+
+	//open socket
+
+}

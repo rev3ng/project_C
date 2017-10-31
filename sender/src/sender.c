@@ -18,9 +18,12 @@
 
 int main (void) {
 
-	int i = Load_ipv4();
+
+	void * Lib;
+
+	Lib = Load_ipv4();
 	char* (*ipv4) ();
-	ipv4 = dlsym(IpLib, "CreateIpv4Packet");
+	ipv4 = dlsym(Lib, "CreateIpv4Packet");
 
 	char *asd = (*ipv4)();
 

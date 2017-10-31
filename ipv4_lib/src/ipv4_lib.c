@@ -13,7 +13,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-
+#define BUFFSIZE 4096
 
 unsigned short CheckSum ( unsigned short *datagram, int nbytes )
 {
@@ -63,7 +63,7 @@ void PrintIpv4packet ( char *datagram, char *data ){
 
 }
 
-void PrintHeaderHex (unsigned short *datagram){
+void PrintHeaderHex ( unsigned short *datagram ){
 
 	//struct iphdr *iphd = (struct iphdr *) dtgr;
 	//struct in_addr *addr;
@@ -80,15 +80,15 @@ char * CreateIpv4Packet (){
 
 	//sender address
 	char sender_ip [32];
-	strcpy (sender_ip, "192.168.1.1");
+	//strcpy (sender_ip, send_ip);
 
 	//destination address
 	char destination_ip [32];
-	strcpy (destination_ip, "8.8.8.8");
+	//strcpy (destination_ip, dest_ip);
 
 	//datagram to represent the packet
-	char dtgr [4096], *data, *datagram;
-	datagram = malloc( sizeof (dtgr) );
+	char *data, *datagram;
+	datagram = malloc( sizeof (BUFFSIZE) );
 
 	//clear datagram memory
 	memset( datagram, 0, 4096 );
@@ -99,7 +99,7 @@ char * CreateIpv4Packet (){
 	//data part (jump after header adress)
 	data = datagram + sizeof (struct iphdr);
 	//fill field with some data
-	strcpy(data, "1234567890QWERTYUI");
+	strcpy(data, "ABCDEF54322GHIJK");
 
 	//input buffer
 	char input [32];
@@ -161,12 +161,19 @@ char * CreateIpv4Packet (){
 	else
 		iph->saddr = inet_addr(input);
 
+	printf ("Destination address (8.8.8.8): ");
+	fgets (input, 32, stdin);
+	if (atoi(input)== 0)
+		iph->daddr = inet_addr("8.8.8.8");
+	else
+		iph->daddr = inet_addr(input);
+
 	printf ("Data automaticly set: %s\n", data);
 
-	iph->daddr = inet_addr(destination_ip);	//destination address
+	//iph->daddr = inet_addr(destination_ip);	//destination address
 
-	iph->check = CheckSum ( (unsigned short *) datagram, iph->tot_len );
-
+	//iph->check = CheckSum ( (unsigned short *) datagram, iph->tot_len );
+	iph->check = 10;
 	PrintHeaderHex ( (unsigned short *) datagram );	//test function
 	PrintIpv4packet ( datagram, data );	//test function
 
@@ -182,12 +189,18 @@ char * CreateIpv4Packet (){
 	sin.sin_port = htons (80);
 	sin.sin_addr.s_addr = iph->daddr;
 
+	for ( int i = 0; i <10; i++){
 
 	if (sendto (s, datagram, iph->tot_len ,  0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
-		perror("sendto failed");
+		perror("Sendto failed: ");
 	else
-		printf ("Packet Send. Length : %d \n" , iph->tot_len);
-
+		printf ("Packet send. Length : %d \n" , iph->tot_len);
+	}
 	return datagram;
 
 }
+/* TODO
+ * addresses as function arg
+ *
+ *
+ */
