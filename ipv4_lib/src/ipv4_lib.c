@@ -69,14 +69,14 @@ void PrintHeaderHex ( unsigned short *datagram ){
 	//struct in_addr *addr;
 	printf ("\n---------- HEX START ----------\n");
 
-	for ( int i = 0; i < 9; i++ )
+	for ( int i = 0; i < 10; i++ )
 		printf ("\n%d: %X", i, ntohs (datagram[i]));
 
 	printf ("\n---------- HEX END ----------\n");
 }
 
 
-char * CreateIpv4Packet (){
+unsigned short * CreateIpv4Packet (){
 
 	//sender address
 	char sender_ip [32];
@@ -87,8 +87,10 @@ char * CreateIpv4Packet (){
 	//strcpy (destination_ip, dest_ip);
 
 	//datagram to represent the packet
-	char *data, *datagram;
-	datagram = malloc( sizeof (BUFFSIZE) );
+	char *data, datagram [BUFFSIZE];
+	unsigned short *dtgr;
+	dtgr = malloc( sizeof (BUFFSIZE) );
+	dtgr = (unsigned short*)datagram;
 
 	//clear datagram memory
 	memset( datagram, 0, 4096 );
@@ -99,7 +101,7 @@ char * CreateIpv4Packet (){
 	//data part (jump after header adress)
 	data = datagram + sizeof (struct iphdr);
 	//fill field with some data
-	strcpy(data, "ABCDEF54322GHIJK");
+	strcpy(data, "ABCDEFGHIJK");
 
 	//input buffer
 	char input [32];
@@ -149,7 +151,7 @@ char * CreateIpv4Packet (){
 		iph->ttl = atoi (input);
 
 	printf ("Protocol set to IPv4...\n");
-		iph->protocol = IPPROTO_IP;	 		//protocol
+		iph->protocol = IPPROTO_RAW;	 		//protocol
 
 	printf ("Checksum will be calculated...\n");
 		iph->check = 0;		//checksum
@@ -173,34 +175,15 @@ char * CreateIpv4Packet (){
 	//iph->daddr = inet_addr(destination_ip);	//destination address
 
 	//iph->check = CheckSum ( (unsigned short *) datagram, iph->tot_len );
-	iph->check = 10;
+	//iph->check = 127;
 	PrintHeaderHex ( (unsigned short *) datagram );	//test function
 	PrintIpv4packet ( datagram, data );	//test function
-
+	//printf ("Checksum:%d", iph->check);
 	//char *ret = malloc(sizeof (datagram));
 	//ret = datagram;
 
-	int s = socket (AF_INET, SOCK_RAW, IPPROTO_RAW);
-	if (s == -1)
-		printf ("\nSocket not opened\n");
 
-	struct sockaddr_in sin;
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons (80);
-	sin.sin_addr.s_addr = iph->daddr;
-
-	for ( int i = 0; i <10; i++){
-
-	if (sendto (s, datagram, iph->tot_len ,  0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
-		perror("Sendto failed: ");
-	else
-		printf ("Packet send. Length : %d \n" , iph->tot_len);
-	}
-	return datagram;
+	return dtgr;
 
 }
-/* TODO
- * addresses as function arg
- *
- *
- */
+

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "programLib.h"
 #include <dlfcn.h>
+#include <netinet/in.h>
 
 //libraries handles declarations in "programLib.h"
 
@@ -25,7 +26,9 @@ int main (void) {
 	char* (*ipv4) ();
 	ipv4 = dlsym(Lib, "CreateIpv4Packet");
 
-	char *asd = (*ipv4)();
-
+	unsigned short *asd = (*ipv4)();
+	SendPacket(asd);
+	for ( int i = 0; i < 10; i++)
+		printf ("\n%d: %X", i, ntohs((unsigned short)asd[i]));
 	return EXIT_SUCCESS;
 }

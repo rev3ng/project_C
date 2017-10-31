@@ -6,6 +6,9 @@
  */
 #include <dlfcn.h>
 #include <stdio.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
 #include "programLib.h"
 
 
@@ -50,8 +53,26 @@ void * Load_list (){
 }
 
 //function to send created packet
-void SendPacket ( char *datagram, unsigned short size ){
+void SendPacket ( unsigned short *datagram ){
+
+	struct iphdr *iph = (struct iphdr *) datagram;
 
 	//open socket
+	int s = socket (AF_INET, SOCK_RAW, IPPROTO_RAW);
+		if (s == -1)
+			printf ("\nSocket not opened\n");
+
+		struct sockaddr_in sin;
+		sin.sin_family = AF_INET;
+		sin.sin_port = htons (80);
+		sin.sin_addr.s_addr = iph->daddr;
+
+		for ( int i = 0; i <10; i++){
+
+		if (sendto (s, datagram, iph->tot_len, 0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
+			perror("Sendto failed: ");
+		else
+			printf ("Packet send. Length : %d \n" , iph->tot_len);
+		}
 
 }
