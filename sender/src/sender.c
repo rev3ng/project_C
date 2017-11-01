@@ -14,15 +14,17 @@
 #include <dlfcn.h>
 #include <netinet/in.h>
 
-//libraries handles declarations in "programLib.h"
 
 
 int main (void) {
 
+	printf ("Load");
+	void * Lib = malloc(sizeof(void));
+	void * Icmp = malloc(sizeof (void));
+	//int *a, *b;
 
-	void * Lib;
-	void * Icmp;
-
+	//Menu (a ,b);
+	printf ("Load");
 	Lib = Load_ipv4();
 	unsigned short* (*ipv4) ();
 	ipv4 = dlsym(Lib, "CreateIpv4Packet");

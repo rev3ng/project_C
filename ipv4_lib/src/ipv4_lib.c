@@ -151,7 +151,7 @@ unsigned short * CreateIpv4Packet (){
 		iph->ttl = atoi (input);
 
 	printf ("Protocol set to IPv4...\n");
-		iph->protocol = IPPROTO_ICMP;	 		//protocol
+		iph->protocol = IPPROTO_IP;	 		//protocol
 
 	printf ("Checksum will be calculated...\n");
 		iph->check = 0;		//checksum

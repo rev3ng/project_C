@@ -8,6 +8,7 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/ip.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 unsigned short Checksum ( unsigned short *datagram, int nbytes )
@@ -34,6 +35,11 @@ unsigned short Checksum ( unsigned short *datagram, int nbytes )
 unsigned short * CreateIcmpPacket ( unsigned char * datagram ) {
 
 	struct icmp *icmp = (struct icmp *) ( datagram + sizeof ( struct iphdr ));
+	struct iphdr *iph = (struct iphdr *) datagram;
+	iph->protocol = IPPROTO_ICMP;
+	memset( datagram + sizeof ( struct iphdr ), 0, iph -> tot_len );
+	iph -> tot_len = sizeof ( struct iphdr ) + 2;
+	//iph -> tot_len = 28;
 	char input [32];
 
 	printf ("\nICMP type (0): ");

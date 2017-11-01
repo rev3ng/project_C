@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <stdlib.h>
 #include "programLib.h"
 
 
@@ -76,3 +77,29 @@ void SendPacket ( unsigned short *datagram ){
 		}
 
 }
+
+int Menu ( int *count, int *interface ) {
+
+	char input [32];
+	int result;
+
+	printf ("Welcome to sender. What do you want to do: \n");
+	printf ("[1] Send IPv4 packet \n");
+	printf ("[2] Send ICMP packet \n");
+
+	fgets ( input, 32, stdin );
+	result = atoi (input);
+
+	//printf ("\033[H\033[J");	//cleans console
+	printf ("Which interface do you want to use? Type number of interface.\n");
+
+	/*char cmd [12];
+	sprintf(cmd, "/bin/ip link");
+	system(cmd);
+*/
+	return 1;
+}
+
+
+
+
