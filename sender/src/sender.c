@@ -21,14 +21,21 @@ int main (void) {
 
 
 	void * Lib;
+	void * Icmp;
 
 	Lib = Load_ipv4();
-	char* (*ipv4) ();
+	unsigned short* (*ipv4) ();
 	ipv4 = dlsym(Lib, "CreateIpv4Packet");
 
+	Icmp = Load_icmp();
+	unsigned short* (*icmp) (unsigned char *);
+	icmp = dlsym(Icmp, "CreateIcmpPacket");
+
 	unsigned short *asd = (*ipv4)();
+	icmp ( (unsigned char*) asd );
+
 	SendPacket(asd);
-	for ( int i = 0; i < 10; i++)
-		printf ("\n%d: %X", i, ntohs((unsigned short)asd[i]));
+	//for ( int i = 0; i < 10; i++)
+	//	printf ("\n%d: %X", i, ntohs((unsigned short)asd[i]));
 	return EXIT_SUCCESS;
 }

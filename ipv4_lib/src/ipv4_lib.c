@@ -15,7 +15,7 @@
 
 #define BUFFSIZE 4096
 
-unsigned short CheckSum ( unsigned short *datagram, int nbytes )
+unsigned short Checksum ( unsigned short *datagram, int nbytes )
 {
 	//
 
@@ -151,7 +151,7 @@ unsigned short * CreateIpv4Packet (){
 		iph->ttl = atoi (input);
 
 	printf ("Protocol set to IPv4...\n");
-		iph->protocol = IPPROTO_RAW;	 		//protocol
+		iph->protocol = IPPROTO_ICMP;	 		//protocol
 
 	printf ("Checksum will be calculated...\n");
 		iph->check = 0;		//checksum
@@ -174,7 +174,7 @@ unsigned short * CreateIpv4Packet (){
 
 	//iph->daddr = inet_addr(destination_ip);	//destination address
 
-	//iph->check = CheckSum ( (unsigned short *) datagram, iph->tot_len );
+	//iph->check = Checksum ( (unsigned short *) datagram, iph->tot_len );
 	//iph->check = 127;
 	PrintHeaderHex ( (unsigned short *) datagram );	//test function
 	PrintIpv4packet ( datagram, data );	//test function

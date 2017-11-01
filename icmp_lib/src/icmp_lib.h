@@ -8,6 +8,6 @@
 #ifndef ICMP_LIB_H_
 #define ICMP_LIB_H_
 
-
+unsigned short * CreateIcmpPacket ( unsigned char * datagram );
 
 #endif /* ICMP_LIB_H_ */
