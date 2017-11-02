@@ -10,16 +10,15 @@
 
 struct Node {
 	int id;
-	int a;
-	int b;
+	char *datagram;
 	struct Node *next;
 	struct Node *prev;
 };
 
-struct Node *reserve_mem (int a, int b);
-void insert_tail (int a, int b);
+struct Node *reserve_mem ( char *datagram );
+void insert_tail ( char *datagram );
 void print_list ();
-void delete_id (int a);
+void delete_id (int id);
 
 
 #endif /* LISTA_H_ */

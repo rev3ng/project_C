@@ -12,7 +12,7 @@
 struct Node *head = NULL;
 
 //funkcja rezerwująca pamięć dla nowego elementu listy
-struct Node *reserve_mem (int a, int b){
+struct Node *reserve_mem ( char *datagram ){
 
 	//stworzenie wskaźnika nowego elementu listy
 	struct Node *new_node;
@@ -30,8 +30,7 @@ struct Node *reserve_mem (int a, int b){
 	//przypisanie wartości to elementu listy
 	new_node->id = id;
 	id++;
-	new_node->a = a;
-	new_node->b = b;
+	new_node-> datagram = datagram;
 	new_node->next = NULL;
 	new_node->prev = NULL;
 
@@ -40,10 +39,10 @@ struct Node *reserve_mem (int a, int b){
 }
 
 //funkcja wpisująca nowy element na koniec listy
-void insert_tail (int a, int b){
+void insert_tail ( char *datagram ){
 
 	struct Node *temp = head;
-	struct Node *new_node = reserve_mem(a, b);
+	struct Node *new_node = reserve_mem( datagram );
 
 
 	if (head == NULL){
@@ -64,19 +63,19 @@ void print_list () {
 	struct Node *temp = head;
 
 	while (temp != NULL){
-		printf ("id: %d, A: %d, B: %d\n", temp->id, temp->a, temp->b);
+		printf ("id: %d, dtgr: %p\n", temp->id, (void *)(temp-> datagram) );
 		temp = temp->next;
 	}
 }
 
 //funkcja kasująca element o podanym id
-void delete_id (int a){
+void delete_id (int id){
 
 	struct Node *temp = head;
 	struct Node *del = NULL;
 	struct Node *nxt = NULL;
 
-	while (temp->id != a)
+	while (temp->id != id)
 		temp = temp->next;
 	//printf ("id: %d, A: %d, B: %d\n", temp->id, temp->a, temp->b);
 	temp = temp->prev;

@@ -22,7 +22,7 @@
 //function to load IPv4 library
 void * Load_ipv4 (){
 
-	void *IpLib;	//handle to IP lib
+	void *IpLib = malloc ( sizeof (void ) );	//handle to IP lib
 
 	IpLib = dlopen("./ipv4_lib.so", RTLD_LAZY);
 		if (!IpLib)
@@ -35,7 +35,7 @@ void * Load_ipv4 (){
 //function to load ICMP library
 void * Load_icmp (){
 
-	void *IcmpLib;	//handle to ICMP lib
+	void *IcmpLib = malloc ( sizeof (void ) );	//handle to ICMP lib
 
 	IcmpLib = dlopen("./icmp_lib.so", RTLD_LAZY);
 		if (!IcmpLib)
@@ -48,7 +48,7 @@ void * Load_icmp (){
 //funtion to load Linked list library
 void * Load_list (){
 
-	void *LinkedLib;//handle to LinkedList lib
+	void *LinkedLib = malloc ( sizeof (void ) );//handle to LinkedList lib
 
 	LinkedLib = dlopen("./linkedList_lib.so", RTLD_LAZY);
 		if (!LinkedLib)
@@ -59,15 +59,16 @@ void * Load_list (){
 }
 
 //function to send created packet
-void SendPacket ( unsigned short *datagram ){
+int SendPacket ( unsigned short *datagram, char *interface ){
 
 	struct iphdr *iph = (struct iphdr *) datagram;
 
 	//open socket
 	int s = socket (AF_INET, SOCK_RAW, IPPROTO_RAW);
-		if (s == -1)
+		if (s == -1){
 			printf ("\nSocket not opened\n");
-
+			return EXIT_FAILURE;
+		}
 
 
 	struct sockaddr_in sin;
@@ -76,32 +77,36 @@ void SendPacket ( unsigned short *datagram ){
 	sin.sin_addr.s_addr = iph->daddr;
 
 	struct ifreq ifr;
-	char interface [40];
+	//char interface [40];
 
-	strcpy(interface, "enp9s0");
+	//strcpy(interface, "enp9s0");
 
 	memset(&ifr, 0, sizeof(ifr));
 	snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", interface);
 	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
 			perror("ioctl() failed to find interface ");
-			//return (EXIT_FAILURE);
+			return (EXIT_FAILURE);
 		}
 	//close (s);
 	if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr)) < 0) {
 		printf ("\nNot binded\n");
+		return EXIT_FAILURE;
 	}
 	//bind (s, sin,  );
 	//for ( int i = 0; i <10; i++){
-	if (sendto (s, datagram, iph->tot_len, 0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
+	if (sendto (s, datagram, iph->tot_len, 0, (struct sockaddr *) &sin, sizeof (sin)) < 0){
 		perror("Sendto failed: ");
+		return EXIT_FAILURE;
+	}
 	else
 		printf ("Packet send. Length : %d \n" , iph->tot_len);
 	//}
 		//int bytes = write (s, datagram, iph -> tot_len);
 		//printf ("Bytes sent:%d\n", bytes);
+	return EXIT_SUCCESS;
 }
 
-int Menu ( int *count, int *interface ) {
+int Menu ( int *count, char *interface ) {
 
 	char input [32];
 	int result;
@@ -117,11 +122,21 @@ int Menu ( int *count, int *interface ) {
 	result = atoi (input);
 
 	printf ("\033[H\033[J");	//cleans console
-	printf ("Which interface do you want to use? Type number of interface.\n");
+	printf ("Which interface do you want to use? Type name of interface.\n");
 
 	char cmd [30];
 	sprintf(cmd, "/bin/ip link");
 	system(cmd);
+
+	printf ("Name:");
+	fgets ( input, 32, stdin );
+	memcpy ( interface, input, strlen (input)-1 );
+	//printf ("\n strllen:%d", strlen ( interface ));
+	//str
+
+	printf ("\nHow many packets do you want to send? ");
+	fgets ( input, 32, stdin );
+	*count = atoi (input);
 
 	return result;
 }
