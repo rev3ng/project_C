@@ -10,7 +10,12 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <stdlib.h>
+#include <net/if.h>
 #include "programLib.h"
+#include <sys/ioctl.h>
+#include <string.h>
+#include <fcntl.h>
+#include <stdlib.h>
 
 
 
@@ -63,19 +68,37 @@ void SendPacket ( unsigned short *datagram ){
 		if (s == -1)
 			printf ("\nSocket not opened\n");
 
-		struct sockaddr_in sin;
-		sin.sin_family = AF_INET;
-		sin.sin_port = htons (80);
-		sin.sin_addr.s_addr = iph->daddr;
 
-		for ( int i = 0; i <10; i++){
 
-		if (sendto (s, datagram, iph->tot_len, 0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
-			perror("Sendto failed: ");
-		else
-			printf ("Packet send. Length : %d \n" , iph->tot_len);
+	struct sockaddr_in sin;
+	sin.sin_family = AF_INET;
+	sin.sin_port = htons (80);
+	sin.sin_addr.s_addr = iph->daddr;
+
+	struct ifreq ifr;
+	char interface [40];
+
+	strcpy(interface, "enp9s0");
+
+	memset(&ifr, 0, sizeof(ifr));
+	snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", interface);
+	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
+			perror("ioctl() failed to find interface ");
+			//return (EXIT_FAILURE);
 		}
-
+	//close (s);
+	if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr)) < 0) {
+		printf ("\nNot binded\n");
+	}
+	//bind (s, sin,  );
+	//for ( int i = 0; i <10; i++){
+	if (sendto (s, datagram, iph->tot_len, 0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
+		perror("Sendto failed: ");
+	else
+		printf ("Packet send. Length : %d \n" , iph->tot_len);
+	//}
+		//int bytes = write (s, datagram, iph -> tot_len);
+		//printf ("Bytes sent:%d\n", bytes);
 }
 
 int Menu ( int *count, int *interface ) {
@@ -83,6 +106,9 @@ int Menu ( int *count, int *interface ) {
 	char input [32];
 	int result;
 
+	//printf ("%d", sizeof (struct iphdr));
+
+	printf ("\033[H\033[J");
 	printf ("Welcome to sender. What do you want to do: \n");
 	printf ("[1] Send IPv4 packet \n");
 	printf ("[2] Send ICMP packet \n");
@@ -90,14 +116,14 @@ int Menu ( int *count, int *interface ) {
 	fgets ( input, 32, stdin );
 	result = atoi (input);
 
-	//printf ("\033[H\033[J");	//cleans console
+	printf ("\033[H\033[J");	//cleans console
 	printf ("Which interface do you want to use? Type number of interface.\n");
 
-	/*char cmd [12];
+	char cmd [30];
 	sprintf(cmd, "/bin/ip link");
 	system(cmd);
-*/
-	return 1;
+
+	return result;
 }
 
 

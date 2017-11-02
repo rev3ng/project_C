@@ -176,8 +176,8 @@ unsigned short * CreateIpv4Packet (){
 
 	//iph->check = Checksum ( (unsigned short *) datagram, iph->tot_len );
 	//iph->check = 127;
-	PrintHeaderHex ( (unsigned short *) datagram );	//test function
-	PrintIpv4packet ( datagram, data );	//test function
+	//PrintHeaderHex ( (unsigned short *) datagram );	//test function
+	//PrintIpv4packet ( datagram, data );	//test function
 	//printf ("Checksum:%d", iph->check);
 	//char *ret = malloc(sizeof (datagram));
 	//ret = datagram;

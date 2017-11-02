@@ -38,7 +38,7 @@ unsigned short * CreateIcmpPacket ( unsigned char * datagram ) {
 	struct iphdr *iph = (struct iphdr *) datagram;
 	iph->protocol = IPPROTO_ICMP;
 	memset( datagram + sizeof ( struct iphdr ), 0, iph -> tot_len );
-	iph -> tot_len = sizeof ( struct iphdr ) + 2;
+	iph -> tot_len = sizeof ( struct iphdr ) + 8;
 	//iph -> tot_len = 28;
 	char input [32];
 
@@ -56,8 +56,8 @@ unsigned short * CreateIcmpPacket ( unsigned char * datagram ) {
 		else
 			icmp -> icmp_code = atoi (input);
 
-	printf ("\nICMP checksum will be calcuated: ");
+	printf ("\nICMP checksum will be calcuated... \n");
 	icmp -> icmp_cksum = 0;
-	icmp -> icmp_cksum = Checksum( (unsigned short *) (datagram + sizeof ( struct iphdr ) ), 2);
+	icmp -> icmp_cksum = Checksum( (unsigned short *) (datagram + sizeof ( struct iphdr ) ), 4);
 
 }

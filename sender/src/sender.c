@@ -18,26 +18,33 @@
 
 int main (void) {
 
-	printf ("Load");
+	//printf ("Load\n");
 	void * Lib = malloc(sizeof(void));
 	void * Icmp = malloc(sizeof (void));
-	//int *a, *b;
+	int *count, *interface;
+	unsigned short *dtgr;
 
-	//Menu (a ,b);
-	printf ("Load");
+	dtgr = malloc (sizeof (4096));
+	count = malloc (sizeof (int));
+	interface = malloc (sizeof (int));
+
+
+	int a = Menu (count, interface);
+
 	Lib = Load_ipv4();
 	unsigned short* (*ipv4) ();
 	ipv4 = dlsym(Lib, "CreateIpv4Packet");
+	dtgr = (*ipv4)();
 
-	Icmp = Load_icmp();
-	unsigned short* (*icmp) (unsigned char *);
-	icmp = dlsym(Icmp, "CreateIcmpPacket");
+	if ( a == 2 ){
 
-	unsigned short *asd = (*ipv4)();
-	icmp ( (unsigned char*) asd );
+		Icmp = Load_icmp();
+		unsigned short* (*icmp) (unsigned char *);
+		icmp = dlsym(Icmp, "CreateIcmpPacket");
+		(*icmp) ((unsigned char *)dtgr);
+	}
 
-	SendPacket(asd);
-	//for ( int i = 0; i < 10; i++)
-	//	printf ("\n%d: %X", i, ntohs((unsigned short)asd[i]));
-	return EXIT_SUCCESS;
+	SendPacket(dtgr);
+
+
 }
