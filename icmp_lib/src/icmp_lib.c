@@ -32,7 +32,7 @@ unsigned short Checksum ( unsigned short *datagram, int nbytes )
     return answer;
 }
 
-unsigned short * CreateIcmpPacket ( unsigned char * datagram ) {
+void CreateIcmpPacket ( unsigned char * datagram ) {
 
 	struct icmp *icmp = (struct icmp *) ( datagram + sizeof ( struct iphdr ));
 	struct iphdr *iph = (struct iphdr *) datagram;

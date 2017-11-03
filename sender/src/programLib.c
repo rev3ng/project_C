@@ -110,6 +110,7 @@ int SendPacket ( char *interface ){
 			//printf ("Bytes sent:%d\n", bytes);
 		head = head -> next;
 	}
+	delete_list();
 	return EXIT_SUCCESS;
 }
 
@@ -237,37 +238,17 @@ struct Node * return_head () {
 }
 
 //funkcja kasująca element o podanym id
-void delete_id (int id){
+void delete_list (){
 
 	struct Node *temp = head;
 	struct Node *del = NULL;
-	struct Node *nxt = NULL;
 
-	while (temp->id != id)
-		temp = temp->next;
-	//printf ("id: %d, A: %d, B: %d\n", temp->id, temp->a, temp->b);
-	if ( (temp -> prev == NULL) & (temp -> next == NULL) ){
-		free (temp);
-		head = NULL;
-	}
-	else if ( temp -> prev == NULL ) {
-		head = temp->next;
-		free (temp);
-	}
-	else if ( temp -> next == NULL ) {
+	while ( temp != NULL ){
 		del = temp;
-		temp = temp -> prev;
+		temp = temp -> next;
 		free (del);
 	}
-	else {
-		temp = temp->prev;
-		del = temp->next;
-		//printf ("id: %d, A: %d, B: %d\n", del->id, del->a, del->b);
-		temp->next = del->next;
-		nxt = del->next;
-		nxt->prev = del->prev;
-		free(del);
-	}
+	head = NULL;
 
 }
 

@@ -28,7 +28,7 @@ struct Node {
 struct Node *reserve_mem ( char *datagram );
 void insert_tail ( char *datagram );
 void print_list ();
-void delete_id (int id);
+void delete_list ();
 struct Node * return_head ();
 
 

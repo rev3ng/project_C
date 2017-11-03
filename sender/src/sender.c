@@ -69,8 +69,12 @@ int main (void) {
 	LoadToList( count, (char*)dtgr );
 	print_list();
 	//printf ("%d", head->id);
+	//delete_list();
+	//print_list();
 	SendPacket( interface );
+	print_list();
 	//for ( int i = 2; i < 10; i++ )
+
 	//	delete_id(i);
 	//delete_id(1);
 	//delete_id(10);
