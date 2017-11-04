@@ -26,63 +26,48 @@ int main (void) {
 
 	int *count;
 	char *interface;
-	unsigned short *dtgr;
+	unsigned short *datagram;
+	unsigned short * (*ipv4) () = malloc (sizeof (unsigned short *));
+	void (*icmp) (unsigned char *) = malloc (sizeof(void));
 
-	dtgr = malloc (sizeof (4096));
+	datagram = malloc (sizeof (4096));
 	count = malloc (sizeof (int));
 	interface = malloc (sizeof (char)*32);
 
 
 	int a = Menu (count, interface);
 
-	Ipv4_lib = Load_ipv4();
-	unsigned short* (*ipv4) ();
+	Ipv4_lib = LoadIpv4();
+
 	ipv4 = dlsym(Ipv4_lib, "CreateIpv4Packet");
-	dtgr = (*ipv4)();
+	datagram = (*ipv4)();
 
 	if ( a == 2 ){
 
-		Icmp_lib = Load_icmp();
-		unsigned short* (*icmp) (unsigned char *);
+		Icmp_lib = LoadIcmp();
+
 		icmp = dlsym(Icmp_lib, "CreateIcmpPacket");
-		(*icmp) ((unsigned char *)dtgr);
+		(*icmp) ((unsigned char *) datagram);
 	}
 
-	/*List_lib = Load_list();
-	void (*list) ( char * );
-	void (*print) ();
-	void (*del_list) ( int );
-	del_list = dlsym( List_lib, "delete_id");
-	list = dlsym( List_lib, "insert_tail" );
-	print = dlsym( List_lib, "print_list");
-*/
 
-	//for ( int i = 0; i != *count; i++ ){
-		//(*list) ((char *) dtgr);
-		//SendPacket(dtgr, interface);
-	//}
-	//(*print) ();
-	//printf ("\nCount: %d", *count);
+	LoadToList( count, (char*) datagram );
+	PrintList ();
 
-
-	//
-	LoadToList( count, (char*)dtgr );
-	print_list();
-	//printf ("%d", head->id);
-	//delete_list();
-	//print_list();
 	SendPacket( interface );
-	print_list();
-	//for ( int i = 2; i < 10; i++ )
-
-	//	delete_id(i);
-	//delete_id(1);
-	//delete_id(10);
 	//print_list();
-
+	/*
 	dlclose ( Ipv4_lib );
-	dlclose ( Icmp_lib );
-	//dlclose ( List_lib );
+	if ( Icmp_lib != NULL ){
+		dlclose ( Icmp_lib );
+		free ( Icmp_lib );
+	}
+	free ( Ipv4_lib );
 
+	free ( dtgr );
+	free ( interface );
+	free ( count );
+	free ( ipv4 );
+	free ( icmp );*/
 	EXIT_SUCCESS;
 }

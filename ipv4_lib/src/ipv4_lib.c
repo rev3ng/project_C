@@ -13,8 +13,9 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#define BUFFSIZE 4096
+#define BUFFSIZE 4096	//define to keep size of buffer
 
+//function to calculate checksum of ipv4 packet
 unsigned short Checksum ( unsigned short *datagram, int nbytes )
 {
 	//
@@ -36,7 +37,7 @@ unsigned short Checksum ( unsigned short *datagram, int nbytes )
     return answer;
 }
 
-
+//function to print created packet, use after colleting header data
 void PrintIpv4packet ( char *datagram, char *data ){
 
 	struct iphdr *iphd = (struct iphdr *) datagram;
@@ -63,6 +64,7 @@ void PrintIpv4packet ( char *datagram, char *data ){
 
 }
 
+//function to print header data in 2bytes notation
 void PrintHeaderHex ( unsigned short *datagram ){
 
 	//struct iphdr *iphd = (struct iphdr *) dtgr;
@@ -76,77 +78,71 @@ void PrintHeaderHex ( unsigned short *datagram ){
 }
 
 
+//function to create ipv4 packet
 unsigned short * CreateIpv4Packet (){
 
-	//sender address
-	char sender_ip [32];
-	//strcpy (sender_ip, send_ip);
+	char sender_ip [32];	//sender address
 
-	//destination address
-	char destination_ip [32];
-	//strcpy (destination_ip, dest_ip);
+	char destination_ip [32];	//destination address
 
-	//datagram to represent the packet
-	char *data, datagram [BUFFSIZE];
-	unsigned short *dtgr;
-	dtgr = malloc( sizeof (BUFFSIZE) );
-	dtgr = (unsigned short*)datagram;
+	char *data;	//data to keep data field
+	unsigned short *datagram;	//datagram to represents the packet
 
-	//clear datagram memory
-	memset( datagram, 0, 4096 );
+	datagram = malloc( sizeof (BUFFSIZE) );	//save memory for datagram
 
-	//IP header
-	struct iphdr *iph = (struct iphdr *) datagram;
+	memset( datagram, 0, 4096 );	//clear datagram memory
+
+
+	struct iphdr *iph = (struct iphdr *) datagram;	//IP header
 
 	//data part (jump after header adress)
-	data = datagram + sizeof (struct iphdr);
+	data = (char *) datagram + sizeof (struct iphdr);
 	//fill field with some data
 	strcpy(data, "ABCDEFGHIJK");
 
-	//input buffer
-	char input [32];
+
+	char input [32];	//input buffer
 
 	//fill header fields
 	printf ("Creating IPv4 packet (if empty, set default): \n");
-
 	printf ("Internet header length (5): ");
 	fgets (input, 32, stdin);
 	if (atoi(input)== 0)
-		iph->ihl = 5;
+		iph->ihl = 5;	//internet header length
 	else
 		iph->ihl = atoi (input);
 
 	printf ("Version set to: 4. \n");
-			iph->version = 4;	//version 4/6
+			iph->version = 4;	//version 4
 
 	printf ("Type of service (0): ");
 	fgets (input, 32, stdin);
 	if (atoi(input)== 0)
-		iph->tos = 0;
+		iph->tos = 0;	//ype of service
 	else
 		iph->tos = atoi (input);
 
 	printf ("Total length will be calculated... \n");
-	iph->tot_len = sizeof (struct iphdr) + strlen(data);
+	iph->tot_len = sizeof (struct iphdr) + strlen(data);	//total length
 
 	printf ("ID (54321): ");
 	fgets (input, 32, stdin);
 	if (atoi(input)== 0)
-		iph->id = htons (54321);
+		iph->id = htons (54321);	//id
 	else
 		iph->id = htons (atoi(input));
 
 	printf ("Fragmentation offset (0): ");
 	fgets (input, 32, stdin);
 	if (atoi(input)== 0)
-		iph->frag_off = 0;
+		iph->frag_off = 0;	//fragmentation offset
 	else
 		iph->frag_off = atoi (input);
 
 	printf ("Time to live (64): ");
 	fgets (input, 32, stdin);
 	if (atoi(input)== 0)
-		iph->ttl = 64;
+		iph->ttl = 64;	//time to live
 	else
 		iph->ttl = atoi (input);
 
@@ -159,31 +155,24 @@ unsigned short * CreateIpv4Packet (){
 	printf ("Source address (192.168.1.1): ");
 	fgets (input, 32, stdin);
 	if (atoi(input)== 0)
-		iph->saddr = inet_addr("192.168.1.1");
+		iph->saddr = inet_addr("192.168.1.1");	//source address
 	else
 		iph->saddr = inet_addr(input);
 
 	printf ("Destination address (8.8.8.8): ");
 	fgets (input, 32, stdin);
 	if (atoi(input)== 0)
-		iph->daddr = inet_addr("8.8.8.8");
+		iph->daddr = inet_addr("8.8.8.8");	//destination address
 	else
 		iph->daddr = inet_addr(input);
 
-	printf ("Data automaticly set: %s\n", data);
-
-	//iph->daddr = inet_addr(destination_ip);	//destination address
-
-	//iph->check = Checksum ( (unsigned short *) datagram, iph->tot_len );
-	//iph->check = 127;
-	//PrintHeaderHex ( (unsigned short *) datagram );	//test function
-	//PrintIpv4packet ( datagram, data );	//test function
-	//printf ("Checksum:%d", iph->check);
-	//char *ret = malloc(sizeof (datagram));
-	//ret = datagram;
+	printf ("Data automaticly set: %s\n", data);	//data
 
 
-	return dtgr;
+	iph->check = Checksum ( (unsigned short *) datagram, iph->tot_len );
+
+
+	return datagram;
 
 }
 

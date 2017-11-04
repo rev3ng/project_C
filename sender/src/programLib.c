@@ -15,13 +15,13 @@
 #include <sys/ioctl.h>
 #include <string.h>
 #include <fcntl.h>
-//#include "linkedList_lib.h"
 #include <stdio.h>
+#include <unistd.h>
 
-struct Node *head = NULL;
+struct Node *head = NULL;	//head of the list
 
 //function to load IPv4 library
-void * Load_ipv4 (){
+void * LoadIpv4 (){
 
 	void *IpLib = malloc ( sizeof (void ) );	//handle to IP lib
 
@@ -34,7 +34,7 @@ void * Load_ipv4 (){
 }
 
 //function to load ICMP library
-void * Load_icmp (){
+void * LoadIcmp (){
 
 	void *IcmpLib = malloc ( sizeof (void ) );	//handle to ICMP lib
 
@@ -46,20 +46,7 @@ void * Load_icmp (){
 
 }
 
-//funtion to load Linked list library
-/*void * Load_list (){
-
-	void *LinkedLib = malloc ( sizeof (void ) );//handle to LinkedList lib
-
-	LinkedLib = dlopen("./linkedList_lib.so", RTLD_LAZY);
-		if (!LinkedLib)
-			return 0;
-		else
-			return LinkedLib;
-
-}*/
-
-//function to send created packet
+//function to send packets from linked list
 int SendPacket ( char *interface ){
 
 	char *datagram = head -> datagram;
@@ -78,132 +65,115 @@ int SendPacket ( char *interface ){
 	sin.sin_port = htons (80);
 	sin.sin_addr.s_addr = iph->daddr;
 
-	struct ifreq ifr;
-	//char interface [40];
-
-	//strcpy(interface, "enp9s0");
+	struct ifreq ifr;	//struct to take name of interface
 
 	memset(&ifr, 0, sizeof(ifr));
 	snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "%s", interface);
-	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
+	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {		//find typed interface
 			perror("ioctl() failed to find interface ");
 			return (EXIT_FAILURE);
 		}
-	//close (s);
-	if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr)) < 0) {
+
+	if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr)) < 0) {	//bind socket to interface
 		printf ("\nNot binded\n");
 		return EXIT_FAILURE;
 	}
 
 
-	while ( head != NULL ) {
-		//bind (s, sin,  );
-		//for ( int i = 0; i <10; i++){
-		if (sendto (s, datagram, iph->tot_len, 0, (struct sockaddr *) &sin, sizeof (sin)) < 0){
+	while ( head != NULL ) {	//go to end of list
+
+		if (sendto (s, datagram, iph->tot_len, 0, (struct sockaddr *) &sin, sizeof (sin)) < 0){	//send packet
 			perror("Sendto failed: ");
 			return EXIT_FAILURE;
 		}
 		else
 			printf ("Packet send. Length : %d \n" , iph->tot_len);
-		//}
-			//int bytes = write (s, datagram, iph -> tot_len);
-			//printf ("Bytes sent:%d\n", bytes);
-		head = head -> next;
+
+		head = head -> next;	//go to next node
 	}
-	delete_list();
+	close (s);	//close socket
+	DeleteList ();	//delete list
+	PrintList ();	//print list
 	return EXIT_SUCCESS;
 }
 
+//function to print menu
 int Menu ( int *count, char *interface ) {
 
-	char input [32];
-	int result;
+	char input [32];	//temporary input data
+	int result;	//return value
+	char cmd [30];	//temporary sys command
 
-	//printf ("%d", sizeof (struct iphdr));
-
-	printf ("\033[H\033[J");
+	printf ("\033[H\033[J");	//cleans console
 	printf ("Welcome to sender. What do you want to do: \n");
 	printf ("[1] Send IPv4 packet \n");
 	printf ("[2] Send ICMP packet \n");
 
-	fgets ( input, 32, stdin );
+	fgets ( input, 32, stdin );	//get type of operation
 	result = atoi (input);
 
 	printf ("\033[H\033[J");	//cleans console
 	printf ("Which interface do you want to use? Type name of interface.\n");
 
-	char cmd [30];
+
+	//usu sys command
 	sprintf(cmd, "/bin/ip link");
 	system(cmd);
 
 	printf ("Name:");
-	fgets ( input, 32, stdin );
+	fgets ( input, 32, stdin );	//get name of interface
 	memcpy ( interface, input, strlen (input)-1 );
-	//printf ("\n strllen:%d", strlen ( interface ));
-	//str
 
-	printf ("\nHow many packets do you want to send? ");
-	fgets ( input, 32, stdin );
+
+	printf ("How many packets do you want to send? ");
+	fgets ( input, 32, stdin );	//get number of packets to send
 	*count = atoi (input);
 
 	return result;
 }
 
 
-/*
- * lista.c
- *
- *  Created on: Oct 15, 2017
- *      Author: konrad
- */
 
 void LoadToList ( int *count, char *dtgr ){
 
 	for ( int i = 0; i != *count; i++ )
-		insert_tail( dtgr );
-	//struct Node *asd;
-	//return return_head();
+		InsertTail ( dtgr );
 }
 
 
 
+//function to reserve memory for new list element
+struct Node *ReserveMem ( char *datagram ){
 
-
-//wzkaznik pierwszego elementu listy
-
-
-//funkcja rezerwująca pamięć dla nowego elementu listy
-struct Node *reserve_mem ( char *datagram ){
-
-	//stworzenie wskaźnika nowego elementu listy
+	//create new node
 	struct Node *new_node;
 	static int id = 1;
 
-	//zarezerwowanie pamięci
+	//reserve memory for new node
 	new_node = malloc(sizeof (struct Node));
 
-	//jeżeli nie wiesz po co ten if jest, to możesz go spokojnie usunąć, żeby się z niego nie tłumaczyć
+
 	if (new_node == NULL) {
 		printf("Cannot create new node");
 		return NULL;
 	}
 
-	//przypisanie wartości to elementu listy
+	//add data to new node
 	new_node->id = id;
 	id++;
 	new_node-> datagram = datagram;
 	new_node->next = NULL;
 	new_node->prev = NULL;
 
-	//zwrócenie adresu nowego elementu
+	//return address
 	return new_node;
 }
 
-//funkcja wpisująca nowy element na koniec listy
-void insert_tail ( char *datagram ){
+//function to put new element at the end of the list
+void InsertTail ( char *datagram ){
 
 	struct Node *temp = head;
-	struct Node *new_node = reserve_mem( datagram );
+	struct Node *new_node = ReserveMem ( datagram );
 
 
 	if (head == NULL){
@@ -211,16 +181,17 @@ void insert_tail ( char *datagram ){
 		return;
 	}
 
-	while (temp->next != NULL) //przejście do końca listy
+	while (temp->next != NULL) //goto end of list
 		temp = temp->next;
-	//dopisanie elementu na końcu listy
+
+	//add new node to the end
 	temp->next = new_node;
 	new_node->prev = temp;
 	new_node->next = NULL;
 }
 
-//fukcja do wypisania całej listy
-void print_list () {
+//function to print linked list
+void PrintList () {
 
 	struct Node *temp = head;
 
@@ -233,12 +204,13 @@ void print_list () {
 	}
 }
 
-struct Node * return_head () {
+//function to return head of the list
+struct Node * ReturnHead () {
 	return head;
 }
 
-//funkcja kasująca element o podanym id
-void delete_list (){
+//function to delete linked list
+void DeleteList (){
 
 	struct Node *temp = head;
 	struct Node *del = NULL;
