@@ -41,6 +41,8 @@ int main (void) {
 
 	ipv4 = dlsym(Ipv4_lib, "CreateIpv4Packet");
 	datagram = (*ipv4)();
+	//dlclose ( Ipv4_lib );
+	//free ( Ipv4_lib );
 
 	if ( a == 2 ){
 
@@ -48,6 +50,8 @@ int main (void) {
 
 		icmp = dlsym(Icmp_lib, "CreateIcmpPacket");
 		(*icmp) ((unsigned char *) datagram);
+		//dlclose( Icmp_lib );
+		//free ( Icmp_lib );
 	}
 
 
@@ -56,18 +60,18 @@ int main (void) {
 
 	SendPacket( interface );
 	//print_list();
-	/*
-	dlclose ( Ipv4_lib );
+
+	/*dlclose ( Ipv4_lib );
 	if ( Icmp_lib != NULL ){
 		dlclose ( Icmp_lib );
-		free ( Icmp_lib );
-	}
-	free ( Ipv4_lib );
+		//free ( Icmp_lib );
+	}*/
+	//free ( Ipv4_lib );
 
-	free ( dtgr );
-	free ( interface );
-	free ( count );
-	free ( ipv4 );
-	free ( icmp );*/
+
+	//free ( interface );
+	//free ( count );
+	//free ( ipv4 );
+	//free ( icmp );
 	EXIT_SUCCESS;
 }

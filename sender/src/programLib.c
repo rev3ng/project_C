@@ -87,13 +87,15 @@ int SendPacket ( char *interface ){
 			return EXIT_FAILURE;
 		}
 		else
-			printf ("Packet send. Length : %d \n" , iph->tot_len);
+			printf ("Packet send. Length: %d \n" , iph->tot_len);
 
 		head = head -> next;	//go to next node
 	}
 	close (s);	//close socket
+	//free ( &(head -> datagram));
 	DeleteList ();	//delete list
 	PrintList ();	//print list
+	//free (interface);
 	return EXIT_SUCCESS;
 }
 
