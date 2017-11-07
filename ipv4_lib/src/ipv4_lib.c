@@ -85,10 +85,12 @@ unsigned short * CreateIpv4Packet (){
 
 	char destination_ip [32];	//destination address
 
-	char *data, datagram [BUFFSIZE];	//data to keep data field
-	unsigned short *dtgr;	//datagram to represents the packet
+	char *data;
+	//, datagram [BUFFSIZE];	//data to keep data field
+	//unsigned short *dtgr;	//datagram to represents the packet
 
-	dtgr = malloc( sizeof (char *) );	//save memory for datagram
+	char *datagram = malloc ( BUFFSIZE );
+	//dtgr = malloc( sizeof (char *) );	//save memory for datagram
 
 	memset( datagram, 0, 4096 );	//clear datagram memory
 
@@ -171,8 +173,8 @@ unsigned short * CreateIpv4Packet (){
 
 	iph->check = Checksum ( (unsigned short *) datagram, iph->tot_len );
 
-	dtgr = (unsigned short *)datagram;
-	return dtgr;
+	//dtgr = (unsigned short *)datagram;
+	return (unsigned short *) datagram;
 
 }
 
